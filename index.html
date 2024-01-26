@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chronoquiz</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="chrono.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Andrew Cashner" />
+    <script src="chrono.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Chronoquiz</h1>
+      <p class="instructions">Drag the clue card to the correct spot in the timeline. (<a href="about.html">?</a>)</p>
+      <form id="inputForm">
+        <label for="source">Choose a timeline:</label>
+        <select name="source" id="source" required>
+          <option value="music" selected>Music</option>
+          <option value="wars">Wars</option>
+          <option value="upload">Upload a custom timeline...</option>
+        </select>
+      <div id="file" class="hide">
+        <label for="fileInput">Upload JSON timeline file (<a href="about.html">?</a>)</label>
+        <input id="fileInput" type="file" accept=".json">
+      </div>
+      <button type="button" id="playbutton">Play!</button>
+      </form>
+      <div id="score" class="hide">
+        <p>Score: <span class="score">0</span></p>
+        <button id="restart" onclick="restart()">Play Again</button>
+      </div>
+    </header>
+    <main>
+      <div class="clue"></div>
+      <div class="scrollingTimeline">
+        <hr />
+      <div class="timelineBar">
+        <hr />
+        <div class="timeline"></div>
+      </div>
+      </div>
+    </main>
+    <footer>
+    </footer>
+  </body>
+</html>

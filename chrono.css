@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&display=swap');
+
+:root {
+  --roman-font: "IM Fell English", "EB Garamond", "Goudy Old Style", Georgia, serif;
+  --heading-font: "IM Fell English SC", "IM Fell English", "EB Garamond", "Goudy Old Style", Georgia, serif;
+  --card-height: 16.8em; /* h:w = 5:7 */
+  --card-width: 12em;
+  --card-margin: 1ex;
+}
+
+html {
+  height: 100%;
+  background: AntiqueWhite;
+}
+
+body {
+  font-family: var(--roman-font);
+  height: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+
+header {
+  height: 20%;
+  justify-content: center;
+}
+
+header h1, div.card span.date {
+  font-family: var(--heading-font);
+}
+
+header h1 {
+  margin: 0;
+  padding-top: 0.5ex;
+  padding-bottom: 0.5ex;
+}
+
+p.instructions {
+  font-style: italic;
+  font-size: 110%;
+  padding-bottom: 1ex;
+  margin: 0;
+}
+
+header button {
+  margin: 1ex;
+}
+
+header form {
+}
+
+div#file {
+  layout: flex;
+  flex-direction: row;
+  margin-top: 1ex;
+}
+div#file input {
+  margin-left: 1em;
+}
+
+header div#score {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  height: 1em;
+}
+
+div#score p {
+  margin: 0;
+  padding: 0;
+  height: 1em;
+  font-family: var(--heading-font);
+  font-size: 200%;
+}
+
+
+.hide {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+}
+
+.show {
+  visibility: visible;
+}
+
+
+div.card {
+  display: flex;
+  flex-direction: column;
+  height: var(--card-height);
+  width: var(--card-width);
+  padding: 1ex;
+  margin: var(--card-margin);
+  border-radius: 1ex;
+  text-align: center;
+  border: 1pt solid black;
+  background-color: LightGray;
+  overflow: scroll;
+}
+
+div.card span.date {
+  font-weight: bold;
+  font-size: 200%;
+  margin-bottom: 1ex;
+  font-family: var(--heading-font);
+}
+
+div.card span.fact {
+}
+
+main {
+  height: 80%;
+}
+
+div.clue {
+  display: flex;
+  flex-direction: row;
+  height: 50%;
+  justify-content: center;
+}
+
+div.clue div.card {
+  background-color: WhiteSmoke;
+  margin-left: -1px;
+}
+
+div.card img {
+  max-width: 95%;
+  max-height: 50%;
+  margin-bottom: 0.5ex;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.clue div.card[data-alert="alert"] { 
+  background-color: Crimson;
+}
+
+div.clue div.cardStub {
+  border: 1px solid black;
+  border-right: 0;
+  border-radius: 1ex 0 0 1ex;
+  height: var(--card-height);
+  width: 1em;
+  margin-top: 1ex;
+  margin-bottom: 1ex;
+  padding-top: 1ex;
+  padding-bottom: 1ex;
+  margin-right: -1ex;
+  padding-right: 0;
+  background-color: LightGray;
+}
+
+div.scrollingTimeline {
+  position: relative;
+  overflow-x: scroll;
+  height: 50%;
+}
+
+div.timelineBar {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+hr {
+  position: absolute;
+  top:  40%;
+  width: 100%;
+  z-index: -1;
+  height: 1ex;
+  border: 0;
+}
+
+/* TODO
+ * We want an hr that is always 100% of the timeline or the window, whichever
+ * is wider. This is a hacky solution where we fake the timeline by displaying
+ * this one under the one inside div.timelineBar, visible only when the 
+ * timeline is less than the screen width.
+ */
+div.scrollingTimeline hr {
+  z-index: -2;
+  background: linear-gradient(to right, #d8d8d8, #d0d0d0, #d8d8d8);
+}
+
+/* TODO needs to continue for full width as timeline expands */
+div.timelineBar hr { 
+  background: linear-gradient(to right, LightGray, Black, LightGray);
+}
+
+div.timeline {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+/*
+footer {
+  position: fixed;
+  bottom: 1em;
+  width: 100%;
+}
+*/
+footer {
+  height: 0;
+}
+
+div.gameover {
+  font-size: 240%;
+  font-style: italic;
+  color: Crimson;
+}
+
+div.gameover p {
+  margin: 1ex;
+}
+
+main section {
+  text-align: left;
+  margin: 1em;
+}
+
+div.card[data-noselect="noselect"] img {
+  pointer-events: none;
+  user-select: none;
+}

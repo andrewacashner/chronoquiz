@@ -1,0 +1,48 @@
+[
+    {
+        "date": -2350,
+        "info": "Enheduanna, high priestess of Ur in Sumeria, composes the world’s oldest written hymns",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Enheduanna%2C_daughter_of_Sargon_of_Akkad.jpg/440px-Enheduanna%2C_daughter_of_Sargon_of_Akkad.jpg"
+    },
+    {
+        "date": 1098,
+        "info": "Birth of Hildegard of Bingen, first known European composer",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Hildegard_von_Bingen.jpg/440px-Hildegard_von_Bingen.jpg"
+    },
+    {
+        "date": 1454,
+        "info": "At the Feast of the Pheasant, knights pledge a new crusade after chansons by Binchois are sung inside a giant pastry",
+        "img": "https://i0.wp.com/streetsofsalem.com/wp-content/uploads/2016/12/feast.jpg?resize=490%2C522&ssl=1"
+    },
+    {
+        "date": 1685,
+        "info": "Birth of J. S. Bach",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Johann_Sebastian_Bach.jpg/440px-Johann_Sebastian_Bach.jpg"
+
+    },
+    {
+        "date": 1791,
+        "info": "Death of W. A. Mozart",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Mozart-1783-lange.jpg/440px-Mozart-1783-lange.jpg"
+    },
+    {
+        "date": 1742,
+        "info": "First performance of Handel’s “Messiah”",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/George_Frideric_Handel_by_Balthasar_Denner.jpg/440px-George_Frideric_Handel_by_Balthasar_Denner.jpg"
+    },
+    {
+        "date": 1943,
+        "info": "Duke Ellington premieres “Black, Brown, and Beige” at Carnegie Hall",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Duke_Ellington_-_publicity.JPG/440px-Duke_Ellington_-_publicity.JPG"
+    },
+    {
+        "date": 2007,
+        "info": "Radiohead releases “In Rainbows” online, letting customers name their own price",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Radiohead_France_2008.jpg/440px-Radiohead_France_2008.jpg"
+    },
+    {
+        "date": 2016,
+        "info": "Beyoncé releases “Lemonade” as a visual album",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Beyonce.jpg/300px-Beyonce.jpg"
+    }
+]

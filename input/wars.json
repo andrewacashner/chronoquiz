@@ -1,0 +1,44 @@
+[
+  { 
+    "date": 1648,
+    "info": "End of the Thirty Years’ War.",
+    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Strasbourg_walter_gustave_adolphe.JPG/320px-Strasbourg_walter_gustave_adolphe.JPG"
+  },
+  {
+    "date": 1783,
+    "info": "American Revolution ends with United States victory.",
+    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Washington_Crossing_the_Delaware_by_Emanuel_Leutze%2C_MMA-NYC%2C_1851.jpg/1920px-Washington_Crossing_the_Delaware_by_Emanuel_Leutze%2C_MMA-NYC%2C_1851.jpg"
+  },
+  {
+    "date": 1815,
+    "info": "Napoleon defeated at Waterloo.",
+    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Napoleon_-_2.jpg/340px-Napoleon_-_2.jpg"
+  },
+  { 
+    "date": 1865,
+    "info": "US Civil War ends with Lee’s surrender at Appomattox.",
+    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Robert_Edward_Lee.jpg/440px-Robert_Edward_Lee.jpg"
+  },
+  { 
+    "date": 1918,
+    "info": "World War I ends in an armistice.",
+    "img": "https://cdn.britannica.com/37/200637-004-93F18163.jpg"
+  },
+  { 
+    "date": 1939,
+    "info": "End of Spanish Civil War.",
+    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Falange_Members_in_Saragossa_1936_%28Retouched%29.jpg/440px-Falange_Members_in_Saragossa_1936_%28Retouched%29.jpg"
+  },
+  {
+    "date": 1939,
+    "info": "Hitler invades Poland, resulting in World War II.",
+    "img": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Hitler_portrait_crop.jpg"
+  },
+  { 
+    "date": 1945,
+    "info": "World War II ends with the unconditional surrender of Japan.",
+    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Atomic_bombing_of_Japan.jpg/600px-Atomic_bombing_of_Japan.jpg"
+  }
+]
+
+

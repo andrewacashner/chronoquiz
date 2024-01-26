@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Timeline</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="timeline.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Andrew Cashner" />
+  </head>
+  <body>
+    <header>
+      <h1>Timeline</h1>
+      <a href="index.html">Return to game</a>
+    </header>
+    <main>
+      <section id="about">
+        <h1>About This Game</h1>
+        <p>
+        Drag the clue cards onto the timeline in chronological order.
+        You receive one point for each correct guess.
+        You lose a point for each incorrect guess, but you can’t go lower than zero points.
+        </p>
+        <p>
+        You can play with several premade timelines, or you can <a href="#json">create and upload your own</a>.
+        </p>
+      </section>
+      <section id="json">
+        <h1>Creating Your Own Timeline</h1>
+        <p>
+        The game can read input files in JSON format with the following characteristics:
+        <ol>
+          <li>The contents should be a single JSON array.</li>
+          <li>Each item in the array should be a JSON object.</li>
+          <li>Each object must have at least a <code>date</code> field and an <code>info</code> field. The date should be entered as a numeric year, and the info field is a brief description (too long and users will have to scroll on the card to read it).</li>
+          <li>Dates must be entered as four-digit years. For dates BC, use negative numbers. If there are multiple events with the same year, users can put the events for that year on the timeline in any order.</li>
+          <li>Each object may also include an optional <code>img</code> field with a URL to an image (online, not a local file). The thumbnail images on Wikipedia articles work well.</li>
+        </ol>
+        Note that all items except numbers must be enclosed in quotation marks.
+        A comma separates each key-value pair in the objects, and each object in the array.
+        <p>
+        Here is an example timeline (<code>music.json</code>):
+        </p>
+        <blockquote>
+          <pre>
+[
+    {
+        "date": -2350,
+        "info": "Enheduanna, high priestess of Ur in Sumeria, composes the world’s oldest written hymns",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Enheduanna%2C_daughter_of_Sargon_of_Akkad.jpg/440px-Enheduanna%2C_daughter_of_Sargon_of_Akkad.jpg"
+    },
+    {
+        "date": 1943,
+        "info": "Duke Ellington premieres “Black, Brown, and Beige” at Carnegie Hall",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Duke_Ellington_-_publicity.JPG/440px-Duke_Ellington_-_publicity.JPG"
+    },
+    {
+        "date": 2016,
+        "info": "Beyoncé releases “Lemonade” as a visual album",
+        "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Beyonce.jpg/300px-Beyonce.jpg"
+    }
+]
+          </pre>
+        </blockquote>
+      </section>
+      <section id="who">
+        <h1>Creator and License</h1>
+        <p>
+        This game was created by <a href="mailto(andrew@andrewcashner.com)">Andrew Cashner</a>, based on an idea by Devin Burke.
+        It is provided without any license or warranty; you may do what you like with it.
+        </p>
+    </main>
+    <footer>
+    </footer>
+  </body>
+</html>
