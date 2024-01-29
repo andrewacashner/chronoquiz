@@ -266,7 +266,7 @@ class FactList extends Array {
 
   setColors(spectrum) {
     this.sortByDate();
-    let interval = Math.floor(this.length / spectrum.length);
+    let interval = Math.floor(spectrum.length / this.length);
     for (let [index, card] of this.entries()) {
       card.color = spectrum[index * interval];
     }
@@ -871,7 +871,7 @@ function isInputValid(json) {
  * @returns {array} Array of Card instances
  */
 function cardArrayFromJson(json) {
-  return json.map((d) => new Card({...d}));
+  return json.map((d) => new Card(d));
 }
 
 /**
