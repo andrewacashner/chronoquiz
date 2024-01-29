@@ -110,9 +110,6 @@ div.card span.date {
   font-family: var(--heading-font);
 }
 
-div.card span.fact {
-}
-
 main {
   height: 80%;
 }

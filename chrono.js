@@ -51,14 +51,6 @@
  */
 "use strict";
 //}}}1
-//{{{1 CONSTANTS
-
-/** Symbol used to select generating an answer card. */
-const ANSWER = Symbol("answer");
-
-/** Symbol to select generating a clue card. */
-const CLUE = Symbol("clue");
-//}}}1
 //{{{1 CLASSES
 //{{{2 Card class
 /**
@@ -69,6 +61,9 @@ const CLUE = Symbol("clue");
  * not draggable).
  */
 class Card {
+
+  /** @type {boolean} */
+  isClue;
 
   /** @type {number} */
   date;
@@ -83,17 +78,21 @@ class Card {
   color;
 
   /** Each card gets the given info and a random unique identifier.
+   * @param {boolean} isClue - is this a clue (true) or an answer (false)?
    * @param {number} year - Four-digit Year of event 
    *      (NB - We currently use years only)
    * @param {string} info - Brief description of event 
    * @param {string} img - URL of image (on web, not local)
    * @param {string} color - CSS color to be used in timeline
    */
-  constructor(year, info, img, color) {
+  constructor({isClue = true, date = "", info, img, color}) {
+    this.isClue = isClue;
     this.id = crypto.randomUUID();
-    
+
     this.date = new Date();
-    this.date.setFullYear(year);
+    if (date !== "") {
+      this.date.setFullYear(date);
+    }
 
     this.info = info;
     this.img = img;
@@ -107,10 +106,10 @@ class Card {
    * @param {element} cardNode -- HTML DOM object for a div.card
    * @param {symbol} mode -- 'answer' or 'clue' 
    */
-  #addHtmlDate(cardNode, mode = CLUE) {
+  #addHtmlDate(cardNode, text) {
     let dateNode = document.createElement("span");
     dateNode.className = "date";
-    dateNode.textContent = (mode === ANSWER) ? this.dateToString() : "Clue";
+    dateNode.textContent = this.#dateToString();
     cardNode.appendChild(dateNode);
   }
 
@@ -140,32 +139,28 @@ class Card {
   }
   
   /**
-   * Create HTML div.card node
-   * @param {symbol} mode - 'answer' or 'clue'
+   * Return the year if positive or year BC if negative. (Deals with the year
+   * only.) 
    *
+   * Technically BC should be offset by one year but we told users to use
+   * negative numbers as years BC.
+   *
+   * @returns {string} - Formatted string for year, with BC if the year was
+   * negative
    */
-  #toHtml(mode, state) {
-    let card = document.createElement("div");
-    card.className = "card";
-    card.id = this.id;
-    card.setAttribute("data-when", this.date.getFullYear());
-
-    // CSS will use this to make it impossible to select card contents
-    // accidentally
-    card.setAttribute("data-noselect", "noselect");
-
-
-    if (mode === ANSWER) {
-      setColor(card, this.color);
+  #dateToString() { 
+    if (this.isClue) {
+      return "Clue";
     } else {
-      makeDraggable(card);
-    }
+      let yearZero = new Date();
+      yearZero.setFullYear(0);
 
-    this.#addHtmlDate(card, mode);
-    this.#addHtmlImg(card);
-    this.#addHtmlInfo(card);
-    
-    return card;
+      let displayYear = this.year;
+      if (this.date < yearZero) {
+        displayYear = `${-displayYear} bce`; 
+      } 
+      return displayYear;
+    }
   }
 
   // PUBLIC METHODS
@@ -174,44 +169,39 @@ class Card {
    * @returns {string}
    */
   get year() { return this.date.getFullYear(); }
-  
-  /**
-   * Return the year if positive or year BC if negative. (Deals with the year
-   * only.) 
-   *
-   * Technically BC should be offset by one year but we told users to use
-   * negative numbers as years BC.
-   *
-   * @returns {string} - Formatted string for year, with BC if the year was
-   *    negative
-   */
-  dateToString() { 
-    let yearZero = new Date();
-    yearZero.setFullYear(0);
-
-    let displayYear = this.year;
-    if (this.date < yearZero) {
-      displayYear = `${-displayYear} bce`; 
+ 
+  set year(YYYY) { 
+    if (YYYY) {
+      this.date.setFullYear(YYYY); 
     } 
-    return displayYear;
   }
 
-  /**
-   * Generate a DOM clue card element.
-   * @param {Game} state - Game state object
-   * @returns {element} - div.clue DOM element
-   */
-  toHtmlClue(state) {
-    return this.#toHtml(this.clue, state);
-  }
 
   /**
-   * Generate a DOM answer card element.
-   * @param {Game} state - Game state object
-   * @returns {element} - div.clue DOM element
+   * Create HTML div.card node
+   * @returns {element} - div.card DOM element
    */
-  toHtmlAnswer(state) {
-    return this.#toHtml(ANSWER, state);
+  toHtml() {
+    let card = document.createElement("div");
+    card.className = "card";
+    card.id = this.id;
+    card.setAttribute("data-when", this.year);
+
+    // CSS will use this to make it impossible to select card contents
+    // accidentally
+    card.setAttribute("data-noselect", "noselect");
+
+    this.#addHtmlDate(card);
+    this.#addHtmlImg(card);
+    this.#addHtmlInfo(card);
+
+    if (this.isClue) {
+      makeDraggable(card);
+    } else {
+      setColor(card, this.color);
+    }
+
+    return card;
   }
 }
 
@@ -276,17 +266,16 @@ class FactList extends Array {
 
   setColors(spectrum) {
     this.sortByDate();
-    let cardMax = this.length;
-    let colorMax = spectrum.length;
-    let interval = Math.floor(colorMax / cardMax);
-  
-    for (let iCard = 0, iColor = 0; 
-      iCard < cardMax && iColor < colorMax; 
-      ++iCard, iColor +=interval) {
-      this[iCard].color = spectrum[iColor];
+    let interval = Math.floor(this.length / spectrum.length);
+    for (let [index, card] of this.entries()) {
+      card.color = spectrum[index * interval];
     }
   }
 
+  /**
+   * Return the last item of the array.
+   * @returns {Card}
+   */
   last() {
     return this.at(-1);
   }
@@ -334,7 +323,9 @@ class Game {
    * order.)
    */
   #moveCurrentClueToTimeline() {
-    this.timeline.addEvent(this.clues.pop());
+    let answer = this.clues.pop();
+    answer.isClue = false;
+    this.timeline.addEvent(answer);
   }
 
   // PUBLIC METHODS
@@ -376,7 +367,7 @@ class Game {
     timelineNode.className = "timeline";
 
     this.timeline.map((fact) =>  {
-      timelineNode.appendChild(fact.toHtmlAnswer(this));
+      timelineNode.appendChild(fact.toHtml());
     });
 
     return timelineNode;
@@ -420,7 +411,7 @@ class Game {
 
     if (this.clues.length > 0) {
       let currentClue = this.clues.last();
-      let clueNode = currentClue.toHtmlClue(this);
+      let clueNode = currentClue.toHtml();
       deckNode.appendChild(clueNode);
     }
     return deckNode;
@@ -447,6 +438,7 @@ function dragstartHandler(event) {
 const CARD_LEFT_MARGIN_DEFAULT = "var(--card-margin)";
 
 const CARD_LEFT_MARGIN_EXTRA = `calc(5 * ${CARD_LEFT_MARGIN_DEFAULT})`;
+
 /**
  * Procedure: Set the given card's left margin to the given value.
  * @param {element} cardNode - div.card DOM element (not Card instance)
@@ -594,18 +586,31 @@ async function flashAlert(el) {
 }
 
 /**
+ * Procedure: Change the class of the element with the given ID to "hide".
+ * @param {string} id - Element id attribute
+ */
+function hideElementById(id) {
+  let el = document.getElementById(id);
+  el.className = "hide";
+}
+
+/**
+ * Procedure: Change the class of the element with the given ID to "show".
+ * @param {string} id - Element id attribute
+ */
+function showElementById(id) {
+  let el = document.getElementById(id);
+  el.className = "show";
+}
+
+/**
  * Procedure: Hide the input form controls and show the score panel instead
  * (at the start of the game).
  */
 function hideInput() {
-  let selector = document.getElementById("inputForm");
-  selector.className = "hide";
-
-  let uploadButton = document.getElementById("file");
-  uploadButton.className = "hide";
-
-  let scoreDisplay = document.getElementById("score");
-  scoreDisplay.className = "show";
+  hideElementById("inputForm");
+  hideElementById("file");
+  showElementById("score");
 }
 
 //}}}1
@@ -742,10 +747,10 @@ function dropHandler(state, event) {
  * values plus a percentage of white to mix in.
   */
 class RgbColorMix {
-  red;
-  green;
-  blue;
-  percentWhite;
+  red;          /** @type {number} **/
+  green;        /** @type {number} **/
+  blue;         /** @type {number} **/
+  percentWhite; /** @type {number} **/
   
   /**
    * @param {number} r - red, integer 0 <= n < 256
@@ -866,7 +871,7 @@ function isInputValid(json) {
  * @returns {array} Array of Card instances
  */
 function cardArrayFromJson(json) {
-  return json.map((d) => new Card(d.date, d.info, d.img));
+  return json.map((d) => new Card({...d}));
 }
 
 /**
@@ -909,11 +914,11 @@ function playGame(url) {
       clues.setColors(spectrum);
       clues.shuffle();
 
-      let now = new Card(
-        new Date().getFullYear(), 
-        "Now", 
-        NOW_IMAGE_URL, 
-        violet);
+      let now = new Card({
+        isClue: false, 
+        info: "Now", 
+        img: NOW_IMAGE_URL, 
+        color: violet});
       let timeline = new FactList(now);
 
       let state = new Game(clues, timeline, 0);
@@ -953,8 +958,11 @@ function getInputUrl() {
 function setupGame() {
   let source = document.getElementById("source");
   source.addEventListener("change", () => {
-    let chooser = document.getElementById("file");
-    chooser.className = (source.value == "upload") ? "show" : "hide";
+    if (source.value === "upload") {
+      showElementById("file");
+    } else {
+      hideElementById("file");
+    }
   });
 
   let playButton = document.getElementById("playbutton");
