@@ -1,4 +1,6 @@
 //{{{1 DESCRIPTION
+// vim: set foldmethod=marker:
+//
 /** 
  * @filedescription Timeline Game
  * @author Andrew A. Cashner
@@ -85,12 +87,14 @@ class Card {
    * @param {string} img - URL of image (on web, not local)
    * @param {string} color - CSS color to be used in timeline
    */
-  constructor({isClue = true, date = "", info, img, color}) {
+  constructor({isClue = true, date = new Date(), info, img, color}) {
     this.isClue = isClue;
     this.id = crypto.randomUUID();
 
-    this.date = new Date();
-    if (date !== "") {
+    if (date instanceof Date) {
+      this.date = date;
+    } else {
+      this.date = new Date();
       this.date.setFullYear(date);
     }
 
@@ -176,7 +180,6 @@ class Card {
     } 
   }
 
-
   /**
    * Create HTML div.card node
    * @returns {element} - div.card DOM element
@@ -198,7 +201,7 @@ class Card {
     if (this.isClue) {
       makeDraggable(card);
     } else {
-      setColor(card, this.color);
+      setCssColor(card, this.color);
     }
 
     return card;
@@ -228,6 +231,105 @@ function makeDraggable(el) {
 }
 
 //}}}2
+//{{{2 Colors: RgbColorMix class
+
+/**
+ * Colors: This class holds the information for one color: red, green, blue
+ * values plus a percentage of white to mix in.
+  */
+class RgbColorMix {
+  red;          /** @type {number} **/
+  green;        /** @type {number} **/
+  blue;         /** @type {number} **/
+  percentWhite; /** @type {number} **/
+  
+  /**
+   * @param {number} r - red, integer 0 <= n < 256
+   * @param {number} g - green, integer 0 <= n < 256
+   * @param {number} b - blue, integer 0 <= n < 256
+   * @param {number} percentWhite - integer percentage of white to mix in 
+   *      (50 = * 50%)
+   */
+  constructor(r, g, b, w) {
+    this.red = r;
+    this.green = g;
+    this.blue = b;
+    this.percentWhite = w; // as decimal, 0.5 not 50%
+  }
+
+  /**
+   * Create CSS color (color-mix with rgb color)
+   * @returns {string} CSS color-mix expression
+   */
+  toCss() {
+    let rgb = `rgb(${this.red}, ${this.green}, ${this.blue})`;
+    return `color-mix(in srgb, ${rgb}, ${this.percentWhite}% white)`;
+  }
+}
+
+/**
+ * List of all colors available in range.
+ * For each of red, blue, and green, iterate through values of primary with
+ * constant secondary and white values (tertiary color is zero).
+ *
+ * @param {number} max - Highest color value possible for each 
+ *      (red, green, blue)
+ * @param {number} min - Used for secondary color, 
+ *      fixed value mixed in to each primary
+ * @param {number} white - Percent white to mix in, fixed for all
+ * @returns {array} array of RgbColorMix instances
+ */
+function colorSpectrum(max = 256, min = 0, white = 50) {
+  let reds = [];
+  let blues = [];
+  let greens = []
+
+  // Increase red value relative to others to go red -> orange
+  for (let i = 0; i < max; ++i) {
+    reds.push([max, i, min, white]);
+  }
+
+  // *Decrease* green and blue value relative to others to continue in
+  // spectrum order 
+  for (let i = max - 1; i >= 0; --i) {
+    greens.push([i, max, min, white]);
+    blues.push([min, i, max, white]);
+  }
+
+  // Combine the spectrums and create a color instance for each
+  let perms = [...reds, ...greens, ...blues];
+  let colors = perms.map((p) => new RgbColorMix(...p));
+  return colors;
+}
+
+
+/**
+ * Get the CSS color string for a card at a given index, dividing the
+ * spectrum evenly by the total number of cards
+ * @param {number} index - integer index of this card in array
+ * @param {length} index - integer length of the array
+ * @returns {string} - CSS color
+ */
+function colorAtIndex(index, length, spectrum) {
+  let color;
+  if (length === 1) {
+    color = violet;
+  } else {
+    let interval = Math.floor(spectrum.length / length);
+    color = spectrum[index * interval];
+  }
+  return color;
+}
+
+/**
+ * Procedure: Set an element's inline style to the given RgbColorMix.
+ * @param {element} el - DOM element
+ * @param {RgbColorMix} color
+ */
+function setCssColor(el, color) {
+  el.style.backgroundColor = color.toCss();
+}
+//}}}2
 //{{{2 FactList class
 /**
  * An array of Card instances representing a list of facts (date + info) for
@@ -235,13 +337,31 @@ function makeDraggable(el) {
  * @extends Array
  */
 class FactList extends Array {
+  // PRIVATE METHODS
+  /**
+   * Procedure: Sort the array by the date field, ascending.
+   */
+  #sortByDate() {
+    this.sort((c1, c2) => { return c1.date - c2.date });
+  }
+  
+  /**
+   * Procedure: Set the colors of the cards in this list, in chronological
+   * order, to evenly spaced intervals along the spectrum.
+   */
+  #setColors() {
+    this.#sortByDate();
+    let spectrum = colorSpectrum();
+    this.forEach((card, index) => {
+      this[index].color = colorAtIndex(index, this.length, spectrum);
+    });
+  }
 
-  // PUBLIC METHODS
   /**
    * Procedure: Shuffle the array, using the Fisher-Yates/Knuth shuffle
    * (`https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle`)
    */
-  shuffle() {
+  #shuffle() {
     /**
      * Return a random integer up to the given max.
      * @param {number} max 
@@ -257,19 +377,12 @@ class FactList extends Array {
     }
   }
 
-  /**
-   * Procedure: Sort the array by the date field, ascending.
-   */
-  sortByDate() {
-    this.sort((c1, c2) => { return c1.date - c2.date });
-  }
+  // PUBLIC METHODS
 
-  setColors(spectrum) {
-    this.sortByDate();
-    let interval = Math.floor(spectrum.length / this.length);
-    for (let [index, card] of this.entries()) {
-      card.color = spectrum[index * interval];
-    }
+  /** Procedure: Set up a FactList as clues: set colors and shuffle. */
+  setupClues() {
+    this.#setColors();
+    this.#shuffle();
   }
 
   /**
@@ -285,7 +398,7 @@ class FactList extends Array {
    */
   addEvent(card) {
     this.push(card);
-    this.sortByDate();
+    this.#sortByDate();
   }
 }
 
@@ -366,9 +479,8 @@ class Game {
     let timelineNode = document.createElement("div");
     timelineNode.className = "timeline";
 
-    this.timeline.map((fact) =>  {
-      timelineNode.appendChild(fact.toHtml());
-    });
+    this.timeline.forEach((fact) => 
+      timelineNode.appendChild(fact.toHtml()));
 
     return timelineNode;
   }
@@ -629,7 +741,6 @@ function replaceElement(selector, el) {
 /**
  * Procedure: Reset the width of the div holding the timeline
  * (div.timelineBar) to the width of the current timeline.
- * TODO this still doesn't interact with CSS quite as desired.
  */
 function updateTimelineWidth(state) {
   let width = `calc(${state.timeline.length} * (var(--card-width) + var(--card-margin)) + 4 * ${CARD_LEFT_MARGIN_EXTRA})`;
@@ -740,86 +851,6 @@ function dropHandler(state, event) {
   }
 }
 //}}}2
-//{{{2 Setting the card colors in the timeline
-
-/**
- * Colors: This class holds the information for one color: red, green, blue
- * values plus a percentage of white to mix in.
-  */
-class RgbColorMix {
-  red;          /** @type {number} **/
-  green;        /** @type {number} **/
-  blue;         /** @type {number} **/
-  percentWhite; /** @type {number} **/
-  
-  /**
-   * @param {number} r - red, integer 0 <= n < 256
-   * @param {number} g - green, integer 0 <= n < 256
-   * @param {number} b - blue, integer 0 <= n < 256
-   * @param {number} percentWhite - integer percentage of white to mix in 
-   *      (50 = * 50%)
-   */
-  constructor(r, g, b, w) {
-    this.red = r;
-    this.green = g;
-    this.blue = b;
-    this.percentWhite = w; // as decimal, 0.5 not 50%
-  }
-
-  /**
-   * Create CSS color (color-mix with rgb color)
-   * @returns {string} CSS color-mix expression
-   */
-  toCss() {
-    let rgb = `rgb(${this.red}, ${this.green}, ${this.blue})`;
-    return `color-mix(in srgb, ${rgb}, ${this.percentWhite}% white)`;
-  }
-}
-
-/**
- * List of all colors available in range.
- * For each of red, blue, and green, iterate through values of primary with
- * constant secondary and white values (tertiary color is zero).
- *
- * @param {number} max - Highest color value possible for each 
- *      (red, green, blue)
- * @param {number} min - Used for secondary color, 
- *      fixed value mixed in to each primary
- * @param {number} white - Percent white to mix in, fixed for all
- * @returns {array} array of RgbColorMix instances
- */
-function colorSpectrum(max, min, white) {
-  let reds = [];
-  let blues = [];
-  let greens = []
-
-  // Increase red value relative to others to go red -> orange
-  for (let i = 0; i < max; ++i) {
-    reds.push([max, i, min, white]);
-  }
-
-  // *Decrease* green and blue value relative to others to continue in
-  // spectrum order 
-  for (let i = max - 1; i >= 0; --i) {
-    greens.push([i, max, min, white]);
-    blues.push([min, i, max, white]);
-  }
-
-  // Combine the spectrums and create a color instance for each
-  let perms = [...reds, ...greens, ...blues];
-  let colors = perms.map((p) => new RgbColorMix(...p));
-  return colors;
-}
-
-/**
- * Procedure: Set an element's inline style to the given RgbColorMix.
- * @param {element} el - DOM element
- * @param {RgbColorMix} color
- */
-function setColor(el, color) {
-  el.style.backgroundColor = color.toCss();
-}
-//}}}2
 //}}}1
 //{{{1 FUNCTIONS TO HANDLE GAME SETUP, USER INPUT
 
@@ -907,18 +938,17 @@ function playGame(url) {
   hideInput();
   loadTimeline(url).then((cards) => {
     if (cards) {
-      let spectrum = colorSpectrum(256, 0, 50); 
-      let violet = spectrum.at(-1);
 
       let clues = new FactList(...cards);
-      clues.setColors(spectrum);
-      clues.shuffle();
+      clues.setupClues();
 
+      let violet = colorSpectrum().at(-1);
       let now = new Card({
         isClue: false, 
         info: "Now", 
         img: NOW_IMAGE_URL, 
-        color: violet});
+        color: violet
+      });
       let timeline = new FactList(now);
 
       let state = new Game(clues, timeline, 0);
@@ -992,7 +1022,7 @@ function showColorSpectrum(spectrum) {
   for (let i = 0; i < spectrum.length; ++i) {
     let span = document.createElement("span");
     span.textContent = `${i}|`;
-    setColor(span, spectrum[i]);
+    setCssColor(span, spectrum[i]);
     tree.appendChild(span);
   }
   return tree;
