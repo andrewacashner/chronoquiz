@@ -1,0 +1,25 @@
+[
+    { 
+        "date" : "1995 AD",
+        "info" : "It was the nineties"
+    },
+    {
+        "date" : 2025,
+        "info" : "The future"
+    },
+    {
+        "date" : 2024,
+        "info" : "<a href='http://example.com/malware.evil'>Click here to claim your money</a>"
+    },
+    {   "date" : 1945,
+        "info" : "End of WWII",
+        "img"  : "http://www.example.com/notthere.jpg"
+    },
+    {   "date" : 2000,
+        "info" : "Y2K did not obliterate civilization",
+        "img"  : "https://wikizilla.org/w/thumb.php?f=Y2K_Bug_%281%29.png&width=660"
+    }
+]
+
+
+

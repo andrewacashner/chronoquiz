@@ -1,9 +1,19 @@
 # TO DO
 
+## Bugs
+- "restart is not a function" (has to do with onclick in HTML?)
+
+## Security
+- sanitize user input
+- better error handling
+
+## Performance
+- create timeline immediately
+- load all images up front
+
 ## Expansions
 - add audio/video to cards?
     - how could users add media by path??
-- separate modules
 
 ## User interface
 - error sound
@@ -18,5 +28,4 @@
 ## Project
 
 - Add, fill in timelines
-- Put on Github
 - Put online
