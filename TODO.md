@@ -1,19 +1,27 @@
 # TO DO
 
 ## Bugs
-- "restart is not a function" (has to do with onclick in HTML?)
 
 ## Security
 - sanitize user input
+    - now we are storing actual image and info elements in the Card after
+      sanitization (=good?)
 - better error handling
 
 ## Performance
-- create timeline immediately
-- load all images up front
+- create timeline immediately when input is selected
+    - load all images up front
+    - send a message when it is ready that will be read by play button
+      callback function
+
+## Style
+- hide elements by adding or removing class in class list (not just by setting
+  class)
 
 ## Expansions
 - add audio/video to cards?
     - how could users add media by path??
+- hide @data-when on clues
 
 ## User interface
 - error sound

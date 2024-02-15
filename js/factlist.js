@@ -9,10 +9,22 @@ import * as Color from "./colors.js";
 
 /**
  * An array of Card instances representing a list of facts (date + info) for
- * the timeline.
+ * the timeline. Check the cards for safety first; if an unsafe card is found,
+ * return an empty array.
  * @extends Array
  */
 export default class FactList extends Array {
+  constructor(...cards) {
+    try {
+      if (cards.every(c => c.safe)) {
+        super(...cards);
+      } else throw "Cannot create a FactList with unsafe Cards";
+    } catch(e) {
+      console.error(e);
+      return [];
+    }
+  }
+
   // PRIVATE METHODS
   /**
    * Procedure: Sort the array by the date field, ascending.

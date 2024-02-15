@@ -42,19 +42,93 @@ export default class Card {
   constructor({isClue = true, date = new Date(), info, img, color}) {
     this.isClue = isClue;
     this.id = crypto.randomUUID();
-
-    if (date instanceof Date) {
-      this.date = date;
-    } else {
-      this.date = new Date();
-      this.date.setFullYear(date);
-    }
-this.info = info;
+    this.date = date;
+    this.info = info;
     this.img = img;
     this.color = color;
+    this.safe = false; // Has this card been sanitized?
   }
-  
+
+  // POST-INITIALIZATION VALIDATION
+  /** Sanitize a card so that the input is valid. Return the cleaned card or
+   * null if there was a problem cleaning it.
+   *
+   * - The date must be either a Date object or an integer string <= the
+   *   current year (including negative numbers).
+   * - The info is converted to plain text using textContent.
+   * - The image, if present, is downloaded and cached.
+   *
+   * @param {Card} - Unsanitized card
+   * @returns {Card} - Card with validated content (with safe property set to
+   * true), or null if the input was invalid
+   */
+  static async sanitize(card) {
+    try {
+      let cleanDate = card.#sanitizeDate(card.date);
+      if (cleanDate) {
+        card.date = cleanDate;
+        card.info = card.#sanitizeInfo(card.info);
+        card.img = await card.#sanitizeImg(card.img)
+          .catch((e) => console.error(e));
+        card.safe = true;
+        return card;
+      } 
+    } catch(e) {
+      console.error(e);
+      return null;
+    }
+  }
+
   // PRIVATE METHODS
+  // Sanitize input 
+  #sanitizeDate(raw) {
+    let date;
+    try {
+      if (raw instanceof Date) {
+        date = raw;
+      } else {
+        let numTest = Number(raw);
+        if (!isNaN(numTest) 
+          && Number.isInteger(numTest) 
+          && numTest <= new Date().getFullYear()) {
+
+          date = new Date();
+          date.setFullYear(numTest);
+        } else throw `Bad date input ${raw}`;
+      }
+    } catch(e) { 
+      console.error(e);
+    }
+    return date;
+  }
+
+  #sanitizeInfo(raw) {
+    let node = document.createElement("span");
+    node.className = "info";
+    node.textContent = raw;
+    return node;
+  }
+
+  async #sanitizeImg(input) {
+    function getImageIfExists(url) { 
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+      });
+    }
+    if (!input) {
+      return null;
+    } else {
+      let img = await getImageIfExists(input).catch(e => console.log(err));
+      if (!img) throw `Image not found at url '${input}'`;
+      return img;
+    } 
+  }
+
+
+
   /**
    * Procedure: Add the element to display the date to the HTML card we are
    * making. In the date field, just show "Clue" if this is a clue.
@@ -68,31 +142,6 @@ this.info = info;
     cardNode.appendChild(dateNode);
   }
 
-  /**
-   * Procedure: Add the element to display the description information to the
-   * HTML card we are making.  
-   * @param {element} cardNode -- HTML DOM object for a div.card
-   */
-  #addHtmlInfo(cardNode) {
-    let infoNode = document.createElement("span");
-    infoNode.className = "info";
-    infoNode.textContent = this.info;
-    cardNode.appendChild(infoNode);
-  }
-  
-  /**
-   * Procedure: If there is an img field, add the element for the image to the
-   * HTML card we are making.
-   * @param {element} cardNode -- HTML DOM object for a div.card
-   */
-  #addHtmlImg(cardNode) {
-    if (this.img) {
-      let imageNode = document.createElement("img");
-      imageNode.src = this.img;
-      cardNode.appendChild(imageNode);
-    }
-  }
-  
   /**
    * Return the year if positive or year BC if negative. (Deals with the year
    * only.) 
@@ -164,8 +213,10 @@ this.info = info;
     card.setAttribute("data-noselect", "noselect");
 
     this.#addHtmlDate(card);
-    this.#addHtmlImg(card);
-    this.#addHtmlInfo(card);
+    if (this.img) {
+      card.appendChild(this.img);
+    }
+    card.appendChild(this.info);
 
     if (this.isClue) {
       this.#makeDraggable(card);

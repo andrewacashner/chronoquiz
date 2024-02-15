@@ -56,15 +56,15 @@
 //{{{1 IMPORTS
 /** We use the Color module to create a spectrum of colors and assign them to
  * the timeline cards. */
-import * as Color from "./colors.js";
+import * as Color from "./js/colors.js";
 
 /** The Card module provides the Card class that we use for clue and timeline
  * card data. */
-import Card from "./card.js";
+import Card from "./js/card.js";
 
 /** The FactList module provides the FactList class, which is our Array of
  * Card instances. */
-import FactList from "./factlist.js";
+import FactList from "./js/factlist.js";
 //}}}1
 //{{{1 GAME CLASS
 /**
@@ -566,57 +566,13 @@ function isInputValid(json) {
  * @returns {array} Array of Card instances
  */
 async function cardArrayFromJson(json) {
-
-  function sanitizeDate(input) {
-    let numTest = Number(input);
-    if (!isNaN(numTest) 
-      && Number.isInteger(numTest) 
-      && numTest <= new Date().getFullYear()) {
-      return numTest;
-    } else throw(`Bad date input ${input}`);
-  }
-  
-  function sanitizeInfo(input) {
-    let test = document.createElement("span");
-    test.textContent = input;
-    return test.textContent;
-  }
-
-  async function sanitizeImg(input) {
-    function doesImageExist(url) { 
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = url;
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-      });
-    }
-    if (!input) {
-      return undefined;
-    } else {
-      let test = await doesImageExist(input).catch((err) => {
-        console.log(err);
-        return null;
-      });
-      if (test === true) {
-        return input;
-      } else throw(`Image not found at url '${input}'`);
-    } 
-  }
-
   let cards = [];
-  for (let data of json) {
+  for (let entry of json) {
     try {
-      let cleanImg = await sanitizeImg(data.img).catch((err) => {
-        console.log(err);
-        return "";
-      });
-      let cleanData = {
-        date: sanitizeDate(data.date),
-        info: sanitizeInfo(data.info),
-        img: cleanImg
-      };
-      cards.push(new Card(cleanData));
+      let validCard = await Card.sanitize(new Card(entry));
+      if (validCard && validCard.safe) {
+        cards.push(validCard);
+      } else throw `Faulty card input {date: ${entry.date}, info: ${entry.info}}; skipping`;
     } catch(e) {
       console.error(e);
     }
@@ -643,10 +599,7 @@ async function loadTimeline(url) {
 
   let cards = null;
   if (isInputValid(data)) {
-    cards = await cardArrayFromJson(data).catch((err) => {
-      console.error(err);
-      return [];
-    });
+    cards = await cardArrayFromJson(data).catch((e) => console.error(e));
   } 
   return cards;
 }
@@ -667,29 +620,33 @@ async function playGame(url) {
     return null;
   });
 
-  if (cards) {
+  try {
+    if (cards) {
       let clues = new FactList(...cards);
       clues.setupClues();
 
       let violet = Color.colorSpectrum().at(-1);
-      let now = new Card({
+      let now = await Card.sanitize(new Card({
         isClue: false, 
         info: "Now", 
         img: NOW_IMAGE_URL, 
         color: violet
-      });
+      }));
+      if (!now || !now.safe) throw "Problem creating first card";
+
       let timeline = new FactList(now);
 
       let state = new Game(clues, timeline, 0);
-      
+
       let timelineArea = document.querySelector("div.scrollingTimeline");
       makeDropTarget(timelineArea, state);
 
       updateClues(state);
       updateDisplay(state);
-  } else {
+    } else throw `Invalid timeline input from ${url}`;
+  } catch(e) {
+    console.error(e);
     alert("Invalid timeline input");
-    throw(`Invalid timeline input from ${url}`);
     restart();
   }
 }
@@ -723,14 +680,17 @@ function setupGame() {
     }
   });
 
-  let playButton = document.getElementById("playbutton");
+  let restartButton = document.querySelector("button#restart");
+  restartButton.addEventListener("click", () => restart());
+
+  let playButton = document.querySelector("button#playbutton");
   playButton.addEventListener("click", () => {
     try {
     let url = getInputUrl();
     if (url) {
       console.log(`Loading file ${url}`);
       playGame(url);
-    } else throw("Invalid input, cannot play game.");
+    } else throw "Invalid input, cannot play game.";
     } catch(e) {
       console.error(e);
     }
