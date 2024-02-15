@@ -51,7 +51,6 @@
  * functions that mutate their arguments and are used only for side effects,
  * not their return value.
  */
-"use strict";
 //}}}1
 //{{{1 IMPORTS
 /** We use the Color module to create a spectrum of colors and assign them to
@@ -615,34 +614,37 @@ const NOW_IMAGE_URL = "https://images.pexels.com/photos/17139860/pexels-photo-17
  */
 async function playGame(url) {
   hideInput();
-  let cards = await loadTimeline(url).catch((err) => {
-    console.error(err);
-    return null;
-  });
-
+  
   try {
+    let violet = Color.colorSpectrum().at(-1);
+    let now = await Card.sanitize(new Card({
+      isClue: false, 
+      info: "Now", 
+      img: NOW_IMAGE_URL, 
+      color: violet
+    }));
+    if (!now || !now.safe) throw "Problem creating first card";
+
+    let timeline = new FactList(now);
+
+    // Display the timeline while the clues are loading
+    let state = new Game([], timeline, 0);
+    updateDisplay(state);
+
+    let cards = await loadTimeline(url).catch((err) => {
+      console.error(err);
+      return null;
+    });
+
     if (cards) {
       let clues = new FactList(...cards);
       clues.setupClues();
-
-      let violet = Color.colorSpectrum().at(-1);
-      let now = await Card.sanitize(new Card({
-        isClue: false, 
-        info: "Now", 
-        img: NOW_IMAGE_URL, 
-        color: violet
-      }));
-      if (!now || !now.safe) throw "Problem creating first card";
-
-      let timeline = new FactList(now);
-
-      let state = new Game(clues, timeline, 0);
+      state.clues = clues;
 
       let timelineArea = document.querySelector("div.scrollingTimeline");
       makeDropTarget(timelineArea, state);
 
       updateClues(state);
-      updateDisplay(state);
     } else throw `Invalid timeline input from ${url}`;
   } catch(e) {
     console.error(e);

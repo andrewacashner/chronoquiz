@@ -13,6 +13,9 @@
     - load all images up front
     - send a message when it is ready that will be read by play button
       callback function
+      - This did not work 
+    - could use IndexedDB to hold images but this seems excessive
+    - could display "Loading" text/image while loading
 
 ## Style
 - hide elements by adding or removing class in class list (not just by setting
