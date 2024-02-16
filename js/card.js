@@ -19,26 +19,20 @@ export default class Card {
   /** @type {boolean} */
   isClue;
 
-  /** @type {number} or {Date} */ // TODO single type
-  dateRaw;
-
   /** @type {Date} */
   date;
 
   /** @type {string} */
-  infoRaw;
-
-  /** @type {string} */
   info;
-
-  /** @type {string} */
-  imgRaw;
 
   /** @type {string} */
   img;
 
   /** @type {string} */
   color;
+
+  /** @type (boolean} */
+  #safe;
 
   /** Each card gets the given info and a random unique identifier.
    * @param {boolean} isClue - is this a clue (true) or an answer (false)?
@@ -48,76 +42,94 @@ export default class Card {
    * @param {string} img - URL of image (on web, not local)
    * @param {string} color - CSS color to be used in timeline
    */
-  constructor({isClue = true, date = new Date(), info, img, color}) {
+  constructor({isClue = true, date, info, img, color}) {
     this.isClue = isClue;
     this.id = crypto.randomUUID();
-    this.dateRaw = date;
-    this.infoRaw = info;
-    this.imgRaw = img;
+    this.date = date;
+    this.info = info;
+    this.img = img;
     this.color = color;
-    this.safe = false; // Has this card been sanitized?
+    this.#safe = false; // Has this card been sanitized?
   }
 
-  // POST-INITIALIZATION VALIDATION
-  /** Sanitize a card so that the input is valid. Return the cleaned card or
-   * null if there was a problem cleaning it.
+  #markSafe() {
+    this.#safe = true;
+  }
+
+  get isSafe() {
+    return this.#safe;
+  }
+
+  /** Create a new card with sanitized input.
    *
-   * - The date must be either a Date object or an integer string <= the
-   *   current year (including negative numbers).
+   * - The date must be an integer string <= the current year (including
+   *   negative numbers).
    * - The info is converted to plain text using textContent.
    * - The image, if present, is downloaded and cached.
    *
-   * @param {Card} - Unsanitized card
+   * The parameters are the same as for new Card().
+   *
+   * @param {boolean} isClue 
+   * @param {number} year 
+   * @param {string} info 
+   * @param {string} img 
+   * @param {string} color 
    * @returns {Card} - Card with validated content (with safe property set to
    * true), or null if the input was invalid
    */
-  static async sanitize(card) {
+  static async newSafeCard({isClue, date, info, img, color}) {
     try {
-      let cleanDate = card.#sanitizeDate(card.dateRaw);
+      let cleanDate = Card.#sanitizeDate(date);
+      let cleanInfo = Card.#sanitizeInfo(info);
+      let cleanImg = await Card.#sanitizeImg(img).catch(e => console.error(e));
+
+      // The date is the only dealbreaker. We just skip a bad image link.
       if (cleanDate) {
-        card.date = cleanDate;
-        card.info = card.#sanitizeInfo(card.infoRaw);
-        card.img = await card.#sanitizeImg(card.imgRaw)
-          .catch((e) => console.error(e));
-        card.safe = true;
+        let card = new Card({
+          isClue: isClue, 
+          date: cleanDate, 
+          info: cleanInfo, 
+          img: cleanImg, 
+          color: color});
+        card.#markSafe();
         return card;
-      } else return null;
+      } else {
+        throw `Could not sanitize card input with date '${date}', info '${info}'`;
+        return null;
+      }
     } catch(e) {
       console.error(e);
-      return null;
     }
   }
 
   // PRIVATE METHODS
   // Sanitize input 
-  #sanitizeDate(raw) {
-    let date;
+  static #sanitizeDate(raw) {
     try {
-      if (raw instanceof Date) {
-        date = raw;
-      } else {
-        let numTest = Number(raw);
-        if (!isNaN(numTest) 
-          && Number.isInteger(numTest) 
-          && numTest <= new Date().getFullYear()) {
+      let numTest = Number(raw);
+      if (!isNaN(numTest) 
+        && Number.isInteger(numTest) 
+        && numTest <= new Date().getFullYear()) {
 
-          date = new Date();
-          date.setFullYear(numTest);
-        } else throw `Bad date input ${raw}`;
+        let date = new Date();
+        date.setFullYear(numTest);
+        return date;
+      } else {
+        throw `Bad date input ${raw}`;
+        return null;
       }
     } catch(e) { 
       console.error(e);
     }
-    return date;
   }
 
-  #sanitizeInfo(raw) {
+  static #sanitizeInfo(raw) {
     let node = document.createElement("span");
     node.textContent = raw;
     return node.textContent;
   }
 
-  async #sanitizeImg(url) {
+  static async #sanitizeImg(url) {
     function getImageIfExists(url) { 
       return new Promise((resolve, reject) => {
         const img = new Image();

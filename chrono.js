@@ -568,8 +568,8 @@ async function cardArrayFromJson(json) {
   let cards = [];
   for (let entry of json) {
     try {
-      let validCard = await Card.sanitize(new Card(entry));
-      if (validCard && validCard.safe) {
+      let validCard = await Card.newSafeCard(entry);
+      if (validCard && validCard.isSafe) {
         cards.push(validCard);
       } else throw `Faulty card input {date: ${entry.date}, info: ${entry.info}}; skipping`;
     } catch(e) {
@@ -616,14 +616,16 @@ async function playGame(url) {
   hideInput();
   
   try {
-    let violet = Color.colorSpectrum().at(-1);
-    let now = await Card.sanitize(new Card({
+    const violet = Color.colorSpectrum().at(-1);
+    const nowData = {
       isClue: false, 
+      date: new Date().getFullYear(),
       info: "Now", 
       img: NOW_IMAGE_URL, 
       color: violet
-    }));
-    if (!now || !now.safe) throw "Problem creating first card";
+    };
+    let now = await Card.newSafeCard(nowData);
+    if (!now || !now.isSafe) throw "Problem creating first card";
 
     let timeline = new FactList(now);
 

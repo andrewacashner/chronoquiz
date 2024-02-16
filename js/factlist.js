@@ -16,7 +16,7 @@ import * as Color from "./colors.js";
 export default class FactList extends Array {
   constructor(...cards) {
     try {
-      if (cards.every(c => c.safe)) {
+      if (cards.every(c => c.isSafe)) {
         super(...cards);
       } else throw "Cannot create a FactList with unsafe Cards";
     } catch(e) {
