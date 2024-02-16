@@ -19,11 +19,20 @@ export default class Card {
   /** @type {boolean} */
   isClue;
 
-  /** @type {number} */
+  /** @type {number} or {Date} */ // TODO single type
+  dateRaw;
+
+  /** @type {Date} */
   date;
 
   /** @type {string} */
+  infoRaw;
+
+  /** @type {string} */
   info;
+
+  /** @type {string} */
+  imgRaw;
 
   /** @type {string} */
   img;
@@ -42,9 +51,9 @@ export default class Card {
   constructor({isClue = true, date = new Date(), info, img, color}) {
     this.isClue = isClue;
     this.id = crypto.randomUUID();
-    this.date = date;
-    this.info = info;
-    this.img = img;
+    this.dateRaw = date;
+    this.infoRaw = info;
+    this.imgRaw = img;
     this.color = color;
     this.safe = false; // Has this card been sanitized?
   }
@@ -64,15 +73,15 @@ export default class Card {
    */
   static async sanitize(card) {
     try {
-      let cleanDate = card.#sanitizeDate(card.date);
+      let cleanDate = card.#sanitizeDate(card.dateRaw);
       if (cleanDate) {
         card.date = cleanDate;
-        card.info = card.#sanitizeInfo(card.info);
-        card.img = await card.#sanitizeImg(card.img)
+        card.info = card.#sanitizeInfo(card.infoRaw);
+        card.img = await card.#sanitizeImg(card.imgRaw)
           .catch((e) => console.error(e));
         card.safe = true;
         return card;
-      } 
+      } else return null;
     } catch(e) {
       console.error(e);
       return null;
@@ -104,26 +113,29 @@ export default class Card {
 
   #sanitizeInfo(raw) {
     let node = document.createElement("span");
-    node.className = "info";
     node.textContent = raw;
-    return node;
+    return node.textContent;
   }
 
-  async #sanitizeImg(input) {
+  async #sanitizeImg(url) {
     function getImageIfExists(url) { 
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.src = url;
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null);
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
       });
     }
-    if (!input) {
+    if (!url) {
       return null;
     } else {
-      let img = await getImageIfExists(input).catch(e => console.log(err));
-      if (!img) throw `Image not found at url '${input}'`;
-      return img;
+      let imgTest = await getImageIfExists(url).catch(e => console.log(err));
+      if (imgTest === true) {
+        return url;
+      } else {
+        throw `Image not found at url '${url}'`;
+        return null;
+      }
     } 
   }
 
@@ -133,13 +145,27 @@ export default class Card {
    * Procedure: Add the element to display the date to the HTML card we are
    * making. In the date field, just show "Clue" if this is a clue.
    * @param {element} cardNode -- HTML DOM object for a div.card
-   * @param {symbol} mode -- 'answer' or 'clue' 
    */
-  #addHtmlDate(cardNode, text) {
+  #addHtmlDate(cardNode) {
     let dateNode = document.createElement("span");
     dateNode.className = "date";
     dateNode.textContent = this.#dateToString();
     cardNode.appendChild(dateNode);
+  }
+
+  #addHtmlImg(cardNode) {
+    if (this.img) {
+      let imgNode = new Image();
+      imgNode.src = this.img;
+      cardNode.appendChild(imgNode);
+    }
+  }
+
+  #addHtmlInfo(cardNode) {
+    let infoNode = document.createElement("span");
+    infoNode.className = "info";
+    infoNode.textContent = this.info;
+    cardNode.appendChild(infoNode);
   }
 
   /**
@@ -213,10 +239,8 @@ export default class Card {
     card.setAttribute("data-noselect", "noselect");
 
     this.#addHtmlDate(card);
-    if (this.img) {
-      card.appendChild(this.img);
-    }
-    card.appendChild(this.info);
+    this.#addHtmlImg(card);
+    this.#addHtmlInfo(card)
 
     if (this.isClue) {
       this.#makeDraggable(card);
