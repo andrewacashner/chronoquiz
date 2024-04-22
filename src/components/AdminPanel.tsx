@@ -262,7 +262,7 @@ export default function AdminPanel(): React.ReactElement {
                 type="number" 
                 name="date" 
                 max={defaultFact.year}
-                onChange={updateFact("date", Fact.dateFromYear)}
+                onBlur={updateFact("date", Fact.dateFromYear)}
                 defaultValue={factState.year} />
             </div>
             <div className="formItem">
