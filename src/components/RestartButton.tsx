@@ -4,7 +4,7 @@ export default function RestartButton() {
   let navigate = useNavigate();
 
   function restart() {
-    navigate("../game");
+    navigate("../");
   }
 
   return(

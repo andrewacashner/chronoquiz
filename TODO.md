@@ -11,11 +11,11 @@
     - Drag/drop handlers
     - Update timeline width with new cards
     - Game over display
-- Improve error handling
-- Routing: add About page
+- (DONE) Improve error handling
+- (DONE) Routing: add About page
 
-- Remove unused code
-- Class methods: mutate or return copy?
+- (DONE) Remove unused code
+- (PASS) Class methods: mutate or return copy?
 - (DONE) FactList is a leaky abstraction: Make sure never need to reference items
   member outside of class
 
@@ -27,10 +27,19 @@
 # Bugs
 
 - Margin doesn't reset after wrong guess
-- "Play again" button doesn't work
+- (DONE) "Play again" button doesn't work
 - Date comparison is wrong for cards with current year, because they
   include exact time if created after Now card?
 
 ## Next stage
 
-- Add login, account interface
+- (DONE) Add login, account interface
+
+# LIVE TESTING
+
+- When playing, "Play again" button goes to 404 Not found
+- Default username on new timeline doesn't get saved
+
+## CSS, IPHONE
+- Nav bar display cramped
+

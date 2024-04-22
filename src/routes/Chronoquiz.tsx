@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { DndContext } from "@dnd-kit/core";
 
 import BackendRequest from "../classes/BackendRequest";
 import Game from "../classes/Game";
@@ -29,10 +30,12 @@ export default function Chronoquiz() {
             <InputForm src={sourceUrl} />
             { game.isGameOver ? null : <ScorePanel /> }
           </section>
-          { game.isGameOver ? <GameOver /> : <Clues /> }
-          <section id="game">
-            <Timeline />
-          </section>
+          <DndContext>
+            { game.isGameOver ? <GameOver /> : <Clues /> }
+            <section id="game">
+              <Timeline />
+            </section>
+          </DndContext>
         </div>
       </main>
   </TimelineContext.Provider>

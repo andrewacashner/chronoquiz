@@ -107,6 +107,7 @@ div.card {
   border: 1pt solid black;
   background-color: LightGray;
   overflow: scroll;
+  touch-action: none;
 }
 
 div.card[data-expand] {
