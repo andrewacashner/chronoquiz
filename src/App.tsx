@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 
 import { useReducer } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./components/shared/Layout";
 import About from "./routes/About";
@@ -28,8 +28,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/game" replace />} />
-            <Route path="/game" element={<Choose/>} />
+            <Route index element={<Choose/>} />
             <Route path="/game/:gameId" element={<Chronoquiz />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin" element={<Admin />} />
