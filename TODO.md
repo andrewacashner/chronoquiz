@@ -1,42 +1,36 @@
-# TO DO
+# To Do
 
-## Bugs
+- (DONE) Add Card input validation in Card class
+    - This is async so will require more adjustments to InputForm component
+- (DONE) Add new game setup: 
+    - (DONE) add "now" card
+    - (DONE) shuffle clues
+- (DONE) Add colors
+- (DONE) Add actual game logic
+    - Drag/drop attributes
+    - Drag/drop handlers
+    - Update timeline width with new cards
+    - Game over display
+- Improve error handling
+- Routing: add About page
 
-## Security
-- sanitize user input
-    - now we are storing actual image and info elements in the Card after
-      sanitization (=good?)
-- better error handling
+- Remove unused code
+- Class methods: mutate or return copy?
+- (DONE) FactList is a leaky abstraction: Make sure never need to reference items
+  member outside of class
 
-## Performance
-- create timeline immediately when input is selected
-    - load all images up front
-    - send a message when it is ready that will be read by play button
-      callback function
-      - This did not work 
-    - could use IndexedDB to hold images but this seems excessive
-    - could display "Loading" text/image while loading
+- Allow HTML in info field or Markdown for italics at least
+# CSS
 
-## Style
-- hide elements by adding or removing class in class list (not just by setting
-  class)
+- Replace hacky timeline bar display
 
-## Expansions
-- add audio/video to cards?
-    - how could users add media by path??
-- hide @data-when on clues
+# Bugs
 
-## User interface
-- error sound
+- Margin doesn't reset after wrong guess
+- "Play again" button doesn't work
+- Date comparison is wrong for cards with current year, because they
+  include exact time if created after Now card?
 
-## Layout
-- timeline rule should always extend to full width as it expands
-    - replace current hacky CSS solution with two overlapping rules
+## Next stage
 
-## Drag/drop
-- Shift cards left on hover also?
-
-## Project
-
-- Add, fill in timelines
-- Put online
+- Add login, account interface
