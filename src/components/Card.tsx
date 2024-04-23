@@ -6,19 +6,6 @@ function color(card) {
   return (card.isClue) ? null : bg(card);
 }
 
-// function dragstartHandler(event) {
-//   event.dataTransfer.setData("id", event.target.id);
-//   event.dataTransfer.effectAllowed = "move";
-// }
-
-// function draggable(card) {
-//   const dragSettings = { 
-//     draggable : true,
-//     onDragStart: dragstartHandler
-//   };
-//   return (card.isClue) ? dragSettings : null;
-// }
-
 function expand(card) {
   return (card.expand) ? { "data-expand": true } : null;
 }
@@ -34,7 +21,7 @@ function classList(card) {
 export default function Card(props) {
   let card = props.children;
 
-  const { attributes, listeners, setCardRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: card ? card.id : null
   });
 
@@ -43,6 +30,13 @@ export default function Card(props) {
   };
 
   if (card) {
+    let draggableSettings = card.isClue ? {
+      ref: setNodeRef,
+      style: style,
+      ...listeners,
+      ...attributes
+    } : null;
+
     return(
       <div key={card.id}
         className={classList(card)}
@@ -51,11 +45,7 @@ export default function Card(props) {
         data-noselect="noselect"
         {...expand(card)}
         {...color(card)}
-
-        ref={setCardRef}
-        style={style}
-        {...listeners}
-        {...attributes}>
+        {...draggableSettings}>
         <span className="date">{card.isClue ? "Clue" : card.fact.yearString }</span>
         { card.fact.img ? <img alt="Clue" src={card.fact.img} /> : null }
         <span className="info">{card.fact.info}</span>

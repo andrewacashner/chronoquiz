@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { DndContext } from "@dnd-kit/core";
 
 import BackendRequest from "../classes/BackendRequest";
 import Game from "../classes/Game";
@@ -8,9 +7,7 @@ import Game from "../classes/Game";
 import Instructions from "../components/Instructions";
 import InputForm from "../components/InputForm";
 import ScorePanel from "../components/ScorePanel";
-import Clues from "../components/Clues";
-import Timeline from "../components/Timeline";
-import GameOver from "../components/GameOver";
+import GamePanel from "../components/GamePanel";
 
 import TimelineContext from "../store/TimelineContext";
 
@@ -30,12 +27,7 @@ export default function Chronoquiz() {
             <InputForm src={sourceUrl} />
             { game.isGameOver ? null : <ScorePanel /> }
           </section>
-          <DndContext>
-            { game.isGameOver ? <GameOver /> : <Clues /> }
-            <section id="game">
-              <Timeline />
-            </section>
-          </DndContext>
+          <GamePanel gameOver={ game.isGameOver } />
         </div>
       </main>
   </TimelineContext.Provider>
