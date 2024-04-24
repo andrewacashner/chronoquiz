@@ -12,7 +12,8 @@
   --mono-font: "IBM Plex Mono", "Source Code Pro", monospace;
   --card-height: 16.8em; /* h:w = 5:7 */
   --card-width: 12em;
-  --card-margin: 1ex;
+  --card-margin: 0.1ex;
+  --card-buffer-width: 1ex;
 }
 
 html {
@@ -160,8 +161,8 @@ div.clueDeck div.cardStub {
   border-radius: 1ex 0 0 1ex;
   height: var(--card-height);
   width: 1em;
-  margin-top: 1ex;
-  margin-bottom: 1ex;
+  margin-top: var(--card-margin);
+  margin-bottom: var(--card-margin);
   padding-top: 1ex;
   padding-bottom: 1ex;
   margin-right: -1ex;
@@ -415,4 +416,12 @@ div.prose p, div.prose ul, div.prose pre {
   margin-bottom: 1ex;
   margin-left: 0;
   width: 100%;
+}
+
+div.buffer {
+  width: var(--card-buffer-width);
+}
+
+div.buffer.active {
+  width: calc(4 * var(--card-buffer-width));
 }

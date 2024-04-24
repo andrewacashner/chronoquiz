@@ -1,6 +1,8 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ItemTypes } from "../lib/Constants";
 import { useDrop } from "react-dnd";
+
+import debug from "../lib/debug";
 import TimelineContext from "../store/TimelineContext";
 import Card from "./Card";
 
@@ -17,13 +19,36 @@ export default function Timeline() {
   const windowWidth = document.documentElement.clientWidth;
   const ruleWidth = (timelineWidth > windowWidth) ? timelineWidth : null;
   
-  const [{isOver}, drop] = useDrop(() => ({
+  const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.CARD,
     drop: (item, monitor) => ({ dropPoint: monitor.getClientOffset() }),
-    collect: monitor => ({
-      isOver: monitor.isOver()
-    })
   }), []);
+
+  function Buffer() {
+    let [expand, setExpand] = useState(false);
+    let active = expand ? " active" : "";
+    let classList = "buffer" + active;
+
+    return(
+      <div className={classList} 
+        onDragEnter={() => setExpand(true)}
+        onDragLeave={() => setExpand(false)} />
+    );
+  }
+
+  function CardDeck({ cards, buffer }) {
+    let deck = cards.flatMap((card, index, array) => {
+      let cardElement = <Card key={card.id}>{card}</Card>;
+      return (index < array.length - 1) 
+        ? [cardElement, <Buffer key={card.id + "buffer"} />]
+        : cardElement;
+    });
+    return(
+      <div className="timeline">
+        {deck}
+      </div>
+    );
+  }
 
   if (game.isActive) {
     return(
@@ -31,9 +56,7 @@ export default function Timeline() {
         <hr />
         <div className="timelineBar" {...timelineWidth} >
           <hr {...ruleWidth} />
-          <div className="timeline">
-            {timeline.map(card => <Card key={card.id}>{card}</Card>)}
-          </div>
+          <CardDeck cards={timeline.cards} buffer={<Buffer />} />
         </div>
       </div>
     );

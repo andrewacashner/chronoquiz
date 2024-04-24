@@ -62,10 +62,6 @@ function color(card) {
   return (card.isClue) ? null : bg(card);
 }
 
-// function expand(card) {
-//   return (card.expand) ? { "data-expand": true } : null;
-// }
-
 function classList(card) {
   let classes = ["card"];
   if (card) {
@@ -141,10 +137,14 @@ export default function Card(props) {
       debug("No card found at drop location");
     }
   }
-  const [{isDragging}, drag] = useDrag(() => ({
+  const [, drag] = useDrag(() => ({
     type: ItemTypes.CARD,
+    canDrag: (monitor) => {
+      return card && card.isClue;
+    },
     item: {
       year: card ? card.fact.year : null,
+      card: card
     },
     end: (item, monitor) => {
       let dropResult = monitor.getDropResult();
@@ -152,29 +152,7 @@ export default function Card(props) {
         dropHandler(dropResult.dropPoint);
       }
     },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging()
-    })
-  }))
-
-
-  //  function isThisCardEnclosing({ x, y }): boolean {
-  //    function between(val, lower, upper) {
-  //      return val >= lower && val <= upper;
-  //    }
-  //
-  //    let bounds = boundingBox;
-  //    return between(x, bounds.left, bounds.right) && 
-  //      between(y, bounds.top, bounds.bottom);
-  //  }
-
-  function expand(card) {
-    let expand = null;
-    if (isDragging) { //&& isThisCardEnclosing(dragPoint)) {
-      expand = { "data-expand": true };
-    } 
-    return expand;
-  }
+  }));
 
   if (card) {
     return(
@@ -183,7 +161,6 @@ export default function Card(props) {
         className={classList(card)}
         id={card.id}
         data-when={card.fact.year}
-        {...expand(card)}
         {...color(card)}>
         <span className="date">{card.isClue ? "Clue" : card.fact.yearString }</span>
         { card.fact.img ? <img alt="Clue" src={card.fact.img} /> : null }
