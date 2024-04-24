@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import FactCard from "../classes/FactCard";
 import TimelineDeck from "../classes/TimelineDeck";
@@ -48,6 +49,8 @@ export default function InputForm({ src }) {
   let [json, setJson] = useState(null);
   let [isGameActive, setIsGameActive] = useState(false);
 
+  let navigate = useNavigate();
+
   function getUrl(event: React.FormEvent<HTMLFormElement>): void {
     setIsGameActive(true); 
     setUrl(src);
@@ -75,7 +78,7 @@ export default function InputForm({ src }) {
             setJson(newJson);
           } else {
             alert(`Could not create a timeline from JSON file at ${url}`);
-            window.location.reload();
+            navigate(0);
             throw new Error("Unusable JSON input; restarting");
           }
         } catch(e) { 
@@ -84,7 +87,7 @@ export default function InputForm({ src }) {
       }
     }
     fetchUrl();
-  }, [url]);
+  }, [url, navigate]);
 
   useEffect(() => {
     async function loadClues(json) {
@@ -106,8 +109,9 @@ export default function InputForm({ src }) {
   }, [json, setGame, isGameActive])
 
 
+
   function restart() {
-    window.location.reload();
+    navigate(0);
   }
 
   function PlayButton() {

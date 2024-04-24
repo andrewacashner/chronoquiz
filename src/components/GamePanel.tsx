@@ -1,13 +1,11 @@
 import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-// import { TouchBackend } from "react-dnd-touch-backend";
+import { MultiBackend } from "react-dnd-multi-backend";
+import { HTML5toTouch } from "rdndmb-html5-to-touch";
 // import { usePreview } from "react-dnd-preview";
 
-import debug from "../lib/debug";
 import Clues from "../components/Clues";
 import Timeline from "../components/Timeline";
 import GameOver from "../components/GameOver";
-import Card from "../components/Card";
 
 //function CardPreview() {
 //  let preview = usePreview();
@@ -21,12 +19,10 @@ import Card from "../components/Card";
 //  }
 //}
 
-//<DndProvider backend={TouchBackend} options={{enableMouseEvents: true}}>
-//
 export default function GamePanel({ gameOver }) {
   return(
     <section id="gamePanel">
-      <DndProvider backend={HTML5Backend}>
+      <DndProvider backend={MultiBackend} options={HTML5toTouch}>
         { gameOver ? <GameOver /> : <Clues /> }
         <section id="game">
           <Timeline />

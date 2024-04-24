@@ -425,3 +425,4 @@ div.buffer {
 div.buffer.active {
   width: calc(4 * var(--card-buffer-width));
 }
+

@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import { ItemTypes } from "../lib/Constants";
 import { useDrop } from "react-dnd";
 
-import debug from "../lib/debug";
 import TimelineContext from "../store/TimelineContext";
 import Card from "./Card";
 
@@ -19,7 +18,7 @@ export default function Timeline() {
   const windowWidth = document.documentElement.clientWidth;
   const ruleWidth = (timelineWidth > windowWidth) ? timelineWidth : null;
   
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [, drop] = useDrop(() => ({
     accept: ItemTypes.CARD,
     drop: (item, monitor) => ({ dropPoint: monitor.getClientOffset() }),
   }), []);
