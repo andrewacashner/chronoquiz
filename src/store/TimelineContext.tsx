@@ -1,10 +1,10 @@
 import { createContext } from "react";
-import Game from "../classes/Game";
 
 const TimelineContext = createContext({
-  get: () => {},
+  get: {},
   set: () => {},
-  timeline: [new Game(), () => {}]
+  isDragging: { get: {}, set: () => {}},
+  dragPoint: { get: {}, set: () => {}}
 })
 
 export default TimelineContext;

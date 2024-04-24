@@ -107,8 +107,13 @@ div.card {
   border: 1pt solid black;
   background-color: LightGray;
   overflow: scroll;
-  touch-action: none;
 }
+
+div.clue {
+  cursor: grab;
+}
+
+/*  touch-action: none; */
 
 div.card[data-expand] {
   margin-left: calc(5 * var(--card-margin));
@@ -230,7 +235,7 @@ main section {
   margin: 1em;
 }
 
-div.card[data-noselect="noselect"] img {
+div.card * {
   pointer-events: none;
   user-select: none;
 }
