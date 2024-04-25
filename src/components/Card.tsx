@@ -89,6 +89,7 @@ export default function Card(props) {
     },
   }));
 
+  // Override default preview image for HTML5 backend
   useEffect(() => {
     dragPreview(getEmptyImage(), { captureDraggingState: true });
   }, []); 

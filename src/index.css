@@ -170,7 +170,7 @@ div.clueDeck div.cardStub {
   margin-right: -1ex;
   padding-right: 0;
   background-color: var(--stub-color);
-  background-image: url("https://openclipart.org/image/800px/262372");
+  background-image: url("img/hourglass-line.png");
   background-size: 2em;
   background-repeat: repeat;
   background-blend-mode: soft-light;
