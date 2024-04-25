@@ -1,4 +1,4 @@
-import debug from "../lib/debug";
+import { debug } from "../lib/debug";
 import BackendRequest from "../classes/BackendRequest";
 
 // TODO could you include the token as a member?

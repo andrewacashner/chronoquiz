@@ -1,13 +1,12 @@
-import { useEffect, useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ItemTypes } from "../lib/Constants";
 import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
-import debug from "../lib/debug";
+import { debug } from "../lib/debug";
 import findFirstCardToRight from "../lib/findCard";
 import Game from "../classes/Game";
 import TimelineContext from "../store/TimelineContext";
-
 
 export default function Card(props) {
   let card = props.children;
@@ -73,7 +72,7 @@ export default function Card(props) {
   }
 
 
-  const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
+  const [, drag, dragPreview] = useDrag(() => ({
     type: ItemTypes.CARD,
     canDrag: (monitor) => {
       return card && card.isClue;
@@ -88,15 +87,11 @@ export default function Card(props) {
         dropHandler(dropResult.dropPoint);
       }
     },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
   }));
-  
+
   useEffect(() => {
     dragPreview(getEmptyImage(), { captureDraggingState: true });
-  }, []);
-
+  }, []); 
 
   function color(card) {
     const bg = card => ({ style: { backgroundColor: card.color.css } });

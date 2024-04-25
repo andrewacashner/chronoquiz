@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { debug } from "../lib/debug";
 import FactCard from "../classes/FactCard";
 import TimelineDeck from "../classes/TimelineDeck";
 import Game from "../classes/Game";
@@ -54,13 +55,13 @@ export default function InputForm({ src }) {
   function getUrl(event: React.FormEvent<HTMLFormElement>): void {
     setIsGameActive(true); 
     setUrl(src);
-    console.debug(`Set URL to ${src}`);
+    debug(`Set URL to ${src}`);
   }
   
   useEffect(() => {
     async function fetchUrl(): void {
       if (url) {
-        console.log(`Loading file ${url}`);
+        debug(`Loading file ${url}`);
 
         try {
           let response = await fetch(url);

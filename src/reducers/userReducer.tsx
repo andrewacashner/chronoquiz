@@ -1,5 +1,5 @@
 import User from "../classes/User";
-import debug from "../lib/debug";
+import { debug } from "../lib/debug";
 
 interface UserState {
   currentUser:    User,

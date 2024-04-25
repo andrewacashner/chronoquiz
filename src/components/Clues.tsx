@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import CardDragPreview from "./CardDragPreview";
 import TimelineContext from "../store/TimelineContext";
 import Card from "./Card";
@@ -7,21 +7,27 @@ export default function Clues() {
   let context = useContext(TimelineContext);
   let game = context.get;
   let clues = game.clues;
+  
+  let [dragState, setDragState] = useState(false);
 
   function Stubs(): Array<React.ReactElement> {
-    const Stub = (key) => <div key={key} className="cardStub" />;
     let stubs = clues.allButLastItems();
-    return stubs.map(card => <Stub key={card.id} />);
+    return stubs.map((card, index, array) => {
+      let classList = "cardStub";
+      let status = (dragState && index === array.length - 1) ? " last" : "";
+      return(
+        <div key={card.id} className={classList + status} />
+      );
+    });
   }
 
+
   function CurrentCard() {
+    let cardElement = null;
     if (clues) {
-      return(
-        <Card>{clues.last()}</Card> 
-      );
-    } else {
-      return null;
-    }
+      cardElement = dragState || <Card>{clues.last()}</Card>;
+    } 
+    return cardElement;
   }
 
   return(
@@ -29,7 +35,7 @@ export default function Clues() {
       <div className="clueDeck">
         <Stubs />
         <CurrentCard />
-        <CardDragPreview card={clues.last()} />
+        <CardDragPreview stateFn={setDragState} card={clues.last()} />
       </div>
     </>
   );

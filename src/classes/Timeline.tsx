@@ -1,4 +1,4 @@
-import debug from "../lib/debug";
+import { debug } from "../lib/debug";
 import BackendRequest from "./BackendRequest";
 import Fact from "./Fact";
 

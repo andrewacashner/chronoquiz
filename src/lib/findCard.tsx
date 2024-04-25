@@ -1,4 +1,4 @@
-import debug from "./debug";
+import { debug } from "./debug";
 
 function isCardElement(el: HTMLElement): boolean {
   return el.classList.contains("card");

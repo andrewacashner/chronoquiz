@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import UserContext from "../store/UserContext";
+import { debug } from "../lib/debug";
 import User from "../classes/User";
 
 export default function TimelineList({ data, type = "game", updateFn = null }) {
@@ -37,10 +38,10 @@ export default function TimelineList({ data, type = "game", updateFn = null }) {
 
           if (response.ok) {
             let json = await response.json();
-            console.debug(json);
+            debug(json);
             updateFn(true);
           } else {
-            console.debug(`Could not delete timeline with id ${item.id}`);
+            debug(`Could not delete timeline with id ${item.id}`);
           }
         }
 

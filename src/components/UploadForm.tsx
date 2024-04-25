@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+import { debug } from "../lib/debug";
 import UserContext from "../store/UserContext";
 import Fact from "../classes/Fact";
 
@@ -31,16 +32,16 @@ export default function UploadForm({ dispatch }) {
       let json = JSON.parse(text);
 
       if (isInputValid(json)) {
-        console.debug("Valid input");
-        console.debug(json);
+        debug("Valid input");
+        debug(json);
         let facts = json.map(item => Fact.newFromYear(item));
-        console.debug(facts);
+        debug(facts);
         dispatch({
           type: "addFacts",
           payload: facts
         });
       } else {
-        console.debug("Invalid input");
+        debug("Invalid input");
       }
     }
 

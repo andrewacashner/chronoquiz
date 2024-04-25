@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect, useReducer } from "react";
 import { Navigate } from "react-router-dom";
 
-import debug from "../lib/debug";
+import { debug } from "../lib/debug";
 
 import BackendRequest from "../classes/BackendRequest";
 import User from "../classes/User";
