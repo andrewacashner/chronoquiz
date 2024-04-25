@@ -1,79 +1,13 @@
-import { useContext } from "react";
+import { useEffect, useContext } from "react";
 import { ItemTypes } from "../lib/Constants";
 import { useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 import debug from "../lib/debug";
+import findFirstCardToRight from "../lib/findCard";
 import Game from "../classes/Game";
 import TimelineContext from "../store/TimelineContext";
 
-function isCardElement(el: HTMLElement): boolean {
-  return el.classList.contains("card");
-}
-
-// Return a card element, if found at given coordinates; or null. 
-function cardAtCoord(x: number, y: number): HTMLElement {
-  let elements = document.elementsFromPoint(x, y);
-  let card = elements.find(isCardElement);
-  return card || null;
-}
-
-// Get the center point between two coordinates.
-function midpoint(
-  a: number, // smaller (left edge)
-  b: number  // larger (right edge)
-): number {
-  return (b - a) / 2 + a;
-}
-
-
-// TODO redo without queryselector?
-
-/**
- * Given an event (from a drop), start from its coordinates and search
- * to the right until a card element is found. The card must be dropped to
- * left of the midpoint of the card.
- * Return the answer card or null.
- */
-function findFirstCardToRight(point): HTMLElement {
-  debug(`Card dropped at point (${point.x}, ${point.y})`);
-
-  // Search along the timeline bar regardless of where the drop was vertically
-  let timelineBar = document.querySelector("div.scrollingTimeline hr");
-  let y = timelineBar.getBoundingClientRect().top;
-
-  debug("Looking for nearest card to timeline drop point");
-  let max = document.documentElement.clientWidth; 
-
-  let card = null;
-  for (let x = point.x; x < max; ++x) {
-    card = cardAtCoord(x, y);
-    if (card) {
-      let bounds = card.getBoundingClientRect();
-      let center = midpoint(bounds.left, bounds.right);
-      if (x <= center) break;
-    }
-  }
-
-  return card;
-}
-
-function color(card) {
-  const bg = card => ({ style: { backgroundColor: card.color.css } });
-  return (card.isClue) ? null : bg(card);
-}
-
-function classList(card) {
-  let classes = ["card"];
-  if (card) {
-    if (card.flash) {
-      classes.push("flash");
-    }
-    if (card.isClue) {
-      classes.push("clue");
-    }
-  }
-  return classes.join(" ");
-}
 
 export default function Card(props) {
   let card = props.children;
@@ -137,7 +71,9 @@ export default function Card(props) {
       debug("No card found at drop location");
     }
   }
-  const [, drag] = useDrag(() => ({
+
+
+  const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: ItemTypes.CARD,
     canDrag: (monitor) => {
       return card && card.isClue;
@@ -152,20 +88,41 @@ export default function Card(props) {
         dropHandler(dropResult.dropPoint);
       }
     },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
   }));
+  
+  useEffect(() => {
+    dragPreview(getEmptyImage(), { captureDraggingState: true });
+  }, []);
+
+
+  function color(card) {
+    const bg = card => ({ style: { backgroundColor: card.color.css } });
+    return (card.isClue) ? null : bg(card);
+  }
+
+  function classList(card) {
+    let flash = card.flash ? " flash" : "";
+    let clue = card.clue ? " clue" : "";
+    return "card" + clue + flash;
+  }
 
   if (card) {
     return(
-      <div key={card.id}
-        ref={drag}
-        className={classList(card)}
-        id={card.id}
-        data-when={card.fact.year}
-        {...color(card)}>
-        <span className="date">{card.isClue ? "Clue" : card.fact.yearString }</span>
-        { card.fact.img ? <img alt="Clue" src={card.fact.img} /> : null }
-        <span className="info">{card.fact.info}</span>
-      </div>
+      <>
+        <div key={card.id}
+          ref={drag}
+          className={classList(card)}
+          id={card.id}
+          data-when={card.fact.year}
+          {...color(card)}>
+          <span className="date">{card.isClue ? "Clue" : card.fact.yearString }</span>
+          { card.fact.img ? <img alt="Clue" src={card.fact.img} /> : null }
+          <span className="info">{card.fact.info}</span>
+        </div>
+      </>
     );
   }
 }

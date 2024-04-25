@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { DragOverlay } from "@dnd-kit/core";
+import CardDragPreview from "./CardDragPreview";
 import TimelineContext from "../store/TimelineContext";
 import Card from "./Card";
 
@@ -29,10 +29,8 @@ export default function Clues() {
       <div className="clueDeck">
         <Stubs />
         <CurrentCard />
+        <CardDragPreview card={clues.last()} />
       </div>
-      <DragOverlay>
-        <CurrentCard />
-      </DragOverlay>
     </>
   );
 }
