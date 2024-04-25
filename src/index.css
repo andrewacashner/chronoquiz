@@ -304,12 +304,12 @@ ul {
 
 nav ul {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
-  width: 30vw;
+  list-style: none;
 }
 
 nav ul li {
-  display: table-cell;
 }
 
 nav a {
