@@ -124,31 +124,6 @@ export default class FactCard {
     return testedUrl;
   }
 
-  /**
-   * Return the year if positive or year BC if negative. (Deals with the year
-   * only.) 
-   *
-   * Technically BC should be offset by one year but we told users to use
-   * negative numbers as years BC.
-   *
-   * Returns: Formatted string for year, with BC if the year was
-   * negative
-   */
-  dateToString(): string { 
-    if (this.isClue) {
-      return "Clue";
-    } else {
-      let yearZero = new Date();
-      yearZero.setFullYear(0);
-
-      let displayYear = this.fact.year;
-      if (this.fact.date < yearZero) {
-        displayYear = `${-displayYear} bce`; 
-      } 
-      return displayYear;
-    }
-  }
-
   // Return the date as YYYY year string.
   get year(): string { 
     return this.fact.year; 

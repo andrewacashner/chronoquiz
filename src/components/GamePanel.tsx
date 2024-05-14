@@ -10,7 +10,9 @@ export default function GamePanel({ gameOver }) {
   return(
     <section id="gamePanel">
       <DndProvider backend={MultiBackend} options={HTML5toTouch}>
-        { gameOver ? <GameOver /> : <Clues /> }
+        <div className="gameTop">
+          { gameOver ? <GameOver /> : <Clues /> }
+        </div>
         <section id="game">
           <Timeline />
         </section>

@@ -117,6 +117,12 @@ export default function AdminPanel(): React.ReactElement {
     );
   }
 
+  function FormWarning({ trigger, message }) {
+    return(
+      trigger && <p className="form-warning">{ message }</p>
+    );
+  }
+
   function MetadataPanel(): React.ReactElement {
     let creator = (timelineState.creator === "") 
                   ? currentUser.username 
@@ -244,7 +250,7 @@ export default function AdminPanel(): React.ReactElement {
     function CardPreview({ fact: Fact }): React.ReactElement {
       return(
         <div className="card" data-when={factState.year} data-noselect="noselect">
-          <span className="date">{factState.year}</span>
+          <span className="date">{factState.yearString}</span>
           <img alt={factState.img} src={factState.img} />
           <span className="info">{factState.info}</span>
         </div>
@@ -257,7 +263,7 @@ export default function AdminPanel(): React.ReactElement {
         <form id="addFactForm">
           <div className="formInputBlock">
             <div className="formItem">
-              <label htmlFor="date">Year</label>
+              <label htmlFor="date">Date</label>
               <input 
                 type="number" 
                 name="date" 
@@ -280,6 +286,9 @@ export default function AdminPanel(): React.ReactElement {
                 name="img" 
                 onBlur={updateFact("img")}
                 defaultValue={factState.img} />
+              <FormWarning 
+                trigger={(factState.img.length > Fact.URL_MAX_LENGTH)}
+                message={`URL is too long: max length is ${Fact.URL_MAX_LENGTH} characters.`} />
             </div>
           </div>
           <section id="preview">

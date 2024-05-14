@@ -41,6 +41,10 @@ header h1, div.card span.date {
   font-family: var(--heading-font);
 }
 
+div.card span.date {
+  text-transform: lowercase; /* for small caps */
+}
+
 header h1 {
   margin: 0;
   padding-top: 0.5ex;
@@ -133,11 +137,15 @@ section#game {
   height: 80%;
 }
 
-div.clueDeck {
+div.clueDeck, div.gameover {
   display: flex;
   flex-direction: row;
-  height: 50%;
   justify-content: center;
+  height: 100%;
+}
+
+div.gameTop {
+  height: 20em;
 }
 
 div.clueDeck div.card {
@@ -322,7 +330,7 @@ nav a.active {
 }
 
 nav a, form label {
-  font-family: sans-serif;
+  font-family: var(--sans-font);
 }
 
 ul li button {
@@ -341,7 +349,7 @@ form.timelinePanel {
 table.timeline {
   border-top: 2px solid black;
   border-bottom: 2px solid black;
-  font-family: sans-serif;
+  font-family: var(--sans-font);
   text-align: left;
   margin-left: auto;
   margin-right: auto;
@@ -439,5 +447,13 @@ div.clueDeck div.cardStub.last {
   border-radius: 1ex;
   margin-right: var(--stub-width);
   padding-right: 1ex;
+}
+
+p.form-warning {
+  font-family: var(--sans-font); 
+  font-size: 80%;
+  font-style: italic;
+  color: red;
+  margin-top: 1ex;
 }
 

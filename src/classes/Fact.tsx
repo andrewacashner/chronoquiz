@@ -10,6 +10,8 @@ export default class Fact {
     this.info = info;
     this.img = img;
   }
+  
+  static URL_MAX_LENGTH = 512;
 
   static dateFromYear(year: number): Date {
     let date = new Date();
@@ -36,8 +38,7 @@ export default class Fact {
   }
 
   get yearString(): string {
-    // bce is lowercase because the card date uses small-caps font 
-    return (this.year < 0) ? `${-this.year} bce` : `${this.year}`;
+    return (this.year < 0) ? `${-this.year} BCE` : `${this.year}`;
   }
 
   json() {
