@@ -85,10 +85,7 @@ export default class FactCard {
       if (!isNaN(numTest) 
           && Number.isInteger(numTest) 
           && numTest <= new Date().getFullYear()) {
-
-            // TODO date comparison bad for cards with current year, because
-            // they include exact time if created after Now card?
-            date = new Date();
+            date = new Date("2000-01-01T12:00:00.000Z");
             date.setFullYear(numTest);
         } else {
           throw new Error(`Bad date input ${rawDate}`);

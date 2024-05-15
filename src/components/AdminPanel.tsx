@@ -84,7 +84,11 @@ export default function AdminPanel(): React.ReactElement {
         });
         dispatchAdmin({ 
           type: "set", 
-          payload: { initialTimeline: newTimeline }
+          payload: { 
+            initialTimeline: newTimeline,
+            lastModified: new Date(),
+            lastChange: ""
+          }
         });
       } 
     }
@@ -119,7 +123,7 @@ export default function AdminPanel(): React.ReactElement {
 
   function FormWarning({ trigger, message }) {
     return(
-      trigger && <p className="form-warning">{ message }</p>
+      trigger && <p className="warning">{ message }</p>
     );
   }
 
@@ -347,6 +351,14 @@ export default function AdminPanel(): React.ReactElement {
       if (response.ok) {
         let json = await response.json();
         debug(json);
+        dispatchAdmin({
+          type: "set",
+          payload: {
+            lastModified: new Date(),
+            lastChange: json
+          }
+        });
+
       } else {
         debug(`Problem creating timeline: Server status ${response.status}, ${response.statusText}`);
       }
@@ -453,11 +465,19 @@ export default function AdminPanel(): React.ReactElement {
 
   function Controls(): React.ReactElement {
     return(
+      <>
+        { adminState.lastChange ?  
+        <FormWarning 
+          trigger={(!adminState.saveReady)}
+          message={`Most recent change: ${adminState.lastModified}: ${adminState.lastChange}`} />
+      : null }
       <div className="controls">
+        
         <SaveButton />
         <DiscardChangesButton />
         <DeleteTimelineButton />
       </div>
+    </>
     );
   }
 

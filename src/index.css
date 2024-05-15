@@ -393,28 +393,6 @@ td div button + button {
   margin-left: 1ex;
 }
 
-div.controls {
-  width: 20vw;
-  margin-left: 70vw;
-  margin-right: 10%;
-  display: flex;
-  flex-direction: horizontal;
-  justify-content: space-between;
-}
-
-div.controls button#save {
-  font-size: 150%;
-  
-}
-
-div.controls button#deleteTimeline {
-  font-size: 100%;
-}
-
-button.inactive {
-  color: gray;
-}
-
 div.prose {
   min-width: 30em;
   max-width: 50em;
@@ -449,7 +427,30 @@ div.clueDeck div.cardStub.last {
   padding-right: 1ex;
 }
 
-p.form-warning {
+div.controls {
+  width: 20vw;
+  margin-left: 70vw;
+  margin-right: 10%;
+  display: flex;
+  flex-direction: horizontal;
+  justify-content: space-between;
+}
+
+div.controls button#save {
+  font-size: 150%;
+  
+}
+
+div.controls button#deleteTimeline {
+  font-size: 100%;
+}
+
+button.inactive {
+  color: gray;
+}
+
+
+p.warning {
   font-family: var(--sans-font); 
   font-size: 80%;
   font-style: italic;

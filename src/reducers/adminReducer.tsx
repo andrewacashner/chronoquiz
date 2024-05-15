@@ -6,7 +6,9 @@ interface AdminState {
   updateTimelineList: boolean,
   saveReady: boolean,
   refresh: boolean,
-  hasUnsavedChanges: boolean
+  hasUnsavedChanges: boolean,
+  lastModified: Date,
+  lastChange: string
 }
 
 const defaultAdminState: AdminState = {
@@ -27,6 +29,10 @@ const defaultAdminState: AdminState = {
   // Does client-side timeline differ from version originally loaded from
   // backend server?  
   hasUnsavedChanges: false, 
+
+  // Most recent change time and description
+  lastModified: new Date(),
+  lastChange: ""
 };
 
 function adminReducer(state: AdminState, action: object): AdminState {
