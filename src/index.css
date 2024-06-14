@@ -458,3 +458,12 @@ p.warning {
   margin-top: 1ex;
 }
 
+table.index {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+table.index th, td {
+  padding-left: 1em;
+}

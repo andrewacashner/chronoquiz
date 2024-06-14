@@ -73,18 +73,31 @@ export default function TimelineList({ data, type = "game", updateFn = null }) {
   function GameLink({ entry }) {
     let href = `../game/${entry.id}`;
     let creator = entry.creator ?? entry.user.username;
+    let description = entry.description;
+
     return(
-      <li key={entry.id}>
-        <Link to={href}>{entry.title} (<code>{creator}</code>)</Link>
-      </li>
+      <tr key={entry.id}>
+        <td><Link to={href}>{entry.title}</Link></td>
+        <td><code>{creator}</code></td>
+        <td>{description}</td>
+      </tr>
     );
   }
 
   let ThisLink = type === "admin" ? AdminLink : GameLink;
 
   return(
-    <ul>
-      {data.map(item => <ThisLink key={item.id} entry={item} />)}
-    </ul>
+    <table className="index">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Creator</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+       {data.map(item => <ThisLink key={item.id} entry={item} />)}
+     </tbody>
+   </table>
   );
 }
