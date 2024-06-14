@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { interpolate } from "../lib/utilities";
 
 export default function Keywords({ data }) {
 
@@ -9,9 +10,7 @@ export default function Keywords({ data }) {
   }
 
   function listTimelineLinks(timelines) {
-    return timelines.map((t, index) => 
-                         [ index > 0 && ", ",
-                           timelineLink(t) ]);
+    return interpolate(timelines.map(timelineLink), ", ");
   }
 
   return(
